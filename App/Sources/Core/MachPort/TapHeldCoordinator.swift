@@ -1,3 +1,4 @@
+import Carbon
 import CoreGraphics
 import Foundation
 import MachPort
@@ -70,7 +71,7 @@ final class TapHeldCoordinator: @unchecked Sendable {
   func handlePartialMatchIfApplicable(_ partialMatch: PartialMatch?, machPortEvent: MachPortEvent) -> Bool {
     workItem?.cancel()
 
-    if machPortEvent.type == .keyUp {
+    if machPortEvent.type == .keyUp, machPortEvent.keyCode != kVK_Escape {
       lastKeyDownTime = Self.convertTimestampToMilliseconds(DispatchTime.now().uptimeNanoseconds)
     }
 
