@@ -21,7 +21,7 @@ enum WindowFocus {
     updateRings()
   }
 
-  static func updateRings() {
+  static func updateRings(_ windowId: CGWindowID? = nil) {
     guard let frontmostApplication = NSWorkspace.shared.frontmostApplication else { return }
 
     let newAppWindows = WindowStore.shared
@@ -32,11 +32,17 @@ enum WindowFocus {
 
     let processIdentifier = frontmostApplication.processIdentifier
     let app = AppAccessibilityElement(processIdentifier)
-    guard let id = try? app.focusedWindow()?.id,
-          let window = newAppWindows.first(where: { $0.id == id })
-    else {
+
+    let id: CGWindowID
+    if let windowId {
+      id = windowId
+    } else if let resolvedId = try? app.focusedWindow()?.id {
+      id = resolvedId
+    } else {
       return
     }
+
+    guard let window = newAppWindows.first(where: { $0.id == id }) else { return }
 
     currentWindow = window
 

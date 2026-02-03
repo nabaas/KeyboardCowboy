@@ -8,6 +8,7 @@ final class ApplicationWindowObserver {
   var subscription: AnyCancellable?
   var observers = [AccessibilityObserver]()
 
+  var frontMostApplicationDidChangeFocus: ((CGWindowID) -> Void)?
   var frontMostApplicationDidCreateWindow: (() -> Void)?
   var frontMostApplicationDidCloseWindow: (() -> Void)?
 
@@ -41,6 +42,18 @@ final class ApplicationWindowObserver {
           controller.frontMostApplicationDidCreateWindow?()
         }
 
+      }) {
+        observers.append(observer)
+      }
+
+      if let observer = app.observe(.focusedWindowChanged, element: app.reference, id: id, pointer: pointer, callback: { _, element, _, pointer in
+        guard let pointer else { return }
+
+        let controller = Unmanaged<ApplicationWindowObserver>
+          .fromOpaque(pointer)
+          .takeUnretainedValue()
+        guard let window = WindowAccessibilityElement(element) else { return }
+        controller.frontMostApplicationDidChangeFocus?(window.id)
       }) {
         observers.append(observer)
       }
