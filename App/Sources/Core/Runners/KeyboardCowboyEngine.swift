@@ -151,6 +151,10 @@ final class KeyboardCowboyEngine {
     applicationWindowObserver.subscribe(to: UserSpace.shared.$frontmostApplication)
     WindowTilingRunner.index()
 
+    applicationWindowObserver.frontMostApplicationDidChangeFocus = { id in
+      WindowFocus.updateRings(id)
+    }
+
     applicationWindowObserver.frontMostApplicationDidCreateWindow = {
       WindowStore.shared.index()
       WindowFocus.updateRings()
